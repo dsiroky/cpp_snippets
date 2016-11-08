@@ -5,19 +5,19 @@
 
 //==========================================================================
 
-/// std::thread wrapper and join guard
-class Thread
+/// Thread join guard.
+class ThreadGuard
 {
   public:
-    template<typename ...Args>
-    Thread(Args&&... args)
-      : m_thread(std::forward<Args>(args)...)
+    explicit ThreadGuard(std::thread&& thread)
+      : m_thread(std::move(thread))
     {
     }
 
-    Thread& operator=(Thread&&) = default;
+    ThreadGuard(ThreadGuard&&) = default;
+    ThreadGuard& operator=(ThreadGuard&&) = default;
 
-    ~Thread()
+    ~ThreadGuard()
     {
       if (m_thread.joinable())
       {
@@ -31,9 +31,9 @@ class Thread
 
 //--------------------------------------------------------------------------
 
-static_assert(std::is_move_constructible<Thread>::value,
-              "Thread must be move constructible");
-static_assert(std::is_move_assignable<Thread>::value,
-              "Thread must be moveable");
+static_assert(std::is_move_constructible<ThreadGuard>::value,
+              "ThreadGuard must be move constructible");
+static_assert(std::is_move_assignable<ThreadGuard>::value,
+              "ThreadGuard must be moveable");
 
 #endif /* end of include guard: THREAD_HPP__6HRWAG0C */
